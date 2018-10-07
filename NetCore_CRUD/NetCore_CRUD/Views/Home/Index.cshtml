@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html ng-app="KTJApp">
+<head>
+    <title>CRUD</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="~/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/DrawerMenu/drawer.min.css" rel="stylesheet" />
+
+    <link href="~/css/kendo-ui/styles/kendo.common-material.min.css" rel="stylesheet" />
+    <link href="~/css/kendo-ui/styles/kendo.material.min.css" rel="stylesheet" />
+    <link href="~/css/kendo-ui/styles/kendo.material.mobile.min.css" rel="stylesheet" />
+    <link href="~/css/site.css" rel="stylesheet" />
+
+    <script src="~/js/jquery-1.10.2.min.js"></script>
+    <script src="~/js/Kendo/jszip.min.js"></script>
+    <script src="~/js/Kendo/kendo.custom.min.js"></script>
+    <script src="~/js/DrawerMenu/drawer.min.js"></script>
+    <script src="~/js/jquery.cookie.js"></script>
+
+    <style>
+        #menu {
+            background-color: #007799;
+        }
+
+            #menu .k-link {
+                color: white;
+                background-color: #007799;
+                font-size: large;
+            }
+
+            #menu .k-animation-container .k-link {
+                background-color: white;
+                color: #007799;
+                opacity: 0.8;
+                font-weight: 900;
+            }
+
+            #menu > .k-last {
+                float: right;
+            }
+
+            #menu > li:nth-last-child(2) {
+                float: right;
+            }
+    </style>
+</head>
+<body ng-controller="IndexCtrl as Index" style="padding-top:0px" ng-app="KTJApp">
+    <div id="Menudiv">
+        <ul id="menu">
+            <li>
+                <a href="/#/Main"><strong>首頁</strong></a>
+            </li>
+
+            <li><a href="/#/Basic" ng-click="Index.clickmenu('基本畫面','/#/Basic')">基本畫面</a></li>
+
+        </ul>
+    </div>
+    <ul class="nav nav-tabs">
+        <li data-toggle="tab" ng-repeat="node in Index.tabs">
+            <a href="{{node.link}}" ng-click="Index.select($event)">
+                {{node.name}}
+                <span class="k-icon k-i-close-circle " ng-click="Index.colse($event)"></span>
+            </a>
+
+        </li>
+    </ul>
+    <div ng-view></div>
+    <script>
+        $(document).ready(function () {
+
+
+            $("#menu").kendoMenu({
+                select: function (e) {
+
+                    var itemText = $(e.item).children(".k-link").text().trim();
+                }
+            });
+
+            var menu = $("#menu").data("kendoMenu");
+
+
+            menu.append([
+                {
+                    text: '登出'
+                }
+            ]);
+            menu.append([
+                {
+
+                }
+            ]);
+        });
+    </script>
+
+    <script src="~/js/AngularJS/angular.min.js"></script>
+    <script src="~/js/AngularJS/angular-route.min.js"></script>
+    @*<script src="~/js/AngularJS/angular-base64-upload.min.js"></script>*@
+    <script src="~/Controller/Route.js"></script>
+    <script src="~/Controller/Index.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+</body>
+</html>

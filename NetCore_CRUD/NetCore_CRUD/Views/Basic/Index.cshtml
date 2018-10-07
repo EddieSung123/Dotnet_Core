@@ -1,0 +1,116 @@
+﻿<div id="example">
+    <div id="grid"></div>
+
+    <script>
+        $(document).ready(function () {
+
+            dataSource = new kendo.data.DataSource({
+                    type:"webapi",
+                    transport: {
+                        read: {
+                            url: "/api/ProductApi/GetAll"
+                        },
+                        update: {
+                            type:"post",
+                            url: "/api/ProductApi/Update",
+                            dataType: "json",
+                            complete: function (e) { $("#grid").data("kendoGrid").dataSource.read(); }
+                        },
+                        destroy: {
+                            type: "post",
+                            url:"/api/ProductApi/Delete",
+                            dataType: "json",
+                            complete: function (e) { $("#grid").data("kendoGrid").dataSource.read(); }
+                        },
+                        create: {
+                            type: "post",
+                            url:"/api/ProductApi/Create",
+                            dataType: "json",
+                            complete: function (e) { $("#grid").data("kendoGrid").dataSource.read(); }
+                        },
+                        parameterMap: function (options, operation) {
+                            if (operation !== "read" && options.models) {
+                                return { models: kendo.stringify(options.models) };
+                            }
+                        }
+                    },
+                    batch: true,
+                    pageSize: 20,
+                schema: {
+                        data:"Result",
+                        model: {
+                            id: "ProductID",
+                            fields: {
+                                ProductID: { editable: false, nullable: true },
+                                ProductName: { validation: { required: true } },
+                                UnitPrice: { type: "number", validation: { required: true, min: 1 } },
+                                Discontinued: { type: "boolean" },
+                                UnitsInStock: { type: "number", validation: { min: 0, required: true } }
+                            }
+                        }
+                    }
+                });
+
+            $("#grid").kendoGrid({
+                dataSource: dataSource,
+                pageable: true,
+                height: 550,
+                toolbar: [{ name: "create", text: "新增資料" }],
+                columns: [
+                    { field: "ProductName", title: "產品名稱" },
+                    { field: "UnitPrice", title: "單價", format: "{0:c}", width: "120px" },
+                    { field: "UnitsInStock", title: "庫存", width: "120px" },
+                    { field: "Discontinued", title: "停產",width: "120px", editor: customBoolEditor },
+                    { command: [{ name: "edit", text: "編輯" }, { name: "destroy", text: "刪除" }], title: "&nbsp;", width: "250px" }],
+                serverPaging: true,
+                serverSorting: true,
+                serverSorting: true,
+                serverFiltering: true,
+                edit: function (e) {//要修改畫面時都在這
+                    if (!e.model.isNew()) {
+                        // 編輯數據項時禁用“id”列的編輯器
+                        var nameField = e.container.find("input[name=RouteName]");
+                        $("input[name=RouteID],\input[name=RouteName]").prop('disabled', true);
+                        var name = nameField.val();
+                        e.container.data("kendoWindow").title("修改 ");
+                    }
+                    else {
+                        e.container.data("kendoWindow").title("新增");
+                        //修改新增彈跳視窗
+                        $(e.container).parent().css({
+                            width: "500px",
+                            height: "auto"
+                        })
+                    }
+                },
+                editable: {
+                    mode: "popup",
+                    confirmation: "請確認是否進行刪除?"
+                },
+                pageable: {
+                    pageSizes: [10, 30, 50],
+                    numeric: false,
+                    input: true,
+                    messages: {
+                        display: "{0}到{1}筆  總計{2}筆",
+                        itemsPerPage: "筆每頁",
+                        empty: "查無資料!!",
+                        page: "請輸入頁數",
+                        of: "/ {0}",
+                        first: "前往第一頁",
+                        next: "下一頁",
+                        previous: "上一頁",
+                        last: "前往最後一頁"
+                    }
+                },            
+                scrollable: true
+            });
+        });
+
+        function customBoolEditor(container, options) {
+            var guid = kendo.guid();
+            $('<input class="k-checkbox" id="' + guid + '" type="checkbox" name="Discontinued" data-type="boolean" data-bind="checked:Discontinued">').appendTo(container);
+            $('<label class="k-checkbox-label" for="' + guid + '">&#8203;</label>').appendTo(container);
+        }
+    </script>
+</div>
